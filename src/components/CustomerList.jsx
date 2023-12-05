@@ -11,6 +11,7 @@ import AddTraining from "./AddTraining";
 function CustomerList() {
     const [customers, setCustomers] = useState([]);
     const [open, setOpen] = useState(false);
+    const gridRef = useRef();
 
     useEffect(() => {
      fetchCustomers()
@@ -33,15 +34,7 @@ function CustomerList() {
           })
           .catch(err => console.error(err));
   }
-
-  //const handleAddTraining = (customerData) => {
-      // checking to handle add training
-  //    const name = `${customerData.firstname} ${customerData.lastname}`
-
-  //  };
-    
-    const gridRef = useRef();
-
+  
   const exportToCSV = () => {
     gridRef.current.api.exportDataAsCsv({
       fileName: 'customers.csv',
@@ -72,14 +65,17 @@ function CustomerList() {
         { field: "email", sortable: true, filter: true },
         { field: "phone", sortable: true, filter: true },
         {
-            headerName: "Add Training",
-            field: "addTraining",
-            cellRenderer: params => <AddTraining customer={params.data}/>,
-            width: 150
-          },
-          
-
-          
+          headerName: "Add Training",
+          field: "addTraining",
+          cellRenderer: (params) => (
+            <AddTraining 
+              customer={params.data} 
+              fetchTrainings={fetchCustomers} />
+          ),
+          filter: false, 
+          sortable: false, 
+          width: 150
+        },
         {
             cellRenderer: params => <EditCustomer customerData={params.data} fetchCustomers={fetchCustomers} />,
             width: 120
