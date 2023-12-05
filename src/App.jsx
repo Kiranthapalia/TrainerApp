@@ -1,13 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AppBar, Button, Toolbar, IconButton, Typography, Drawer, List, Container } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import './App.css'
 import CustomerList from './components/CustomerList';
 import TrainingList from './components/TrainingList';
+import Calendar from './components/Calendar';
+import { fetchCustomers } from './components/Fetch';
+import StatisticsPage from './components/Stats';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('customers');
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [customers, setCustomers] = useState([]);
 
   const toggleDrawer = (open) => (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -22,8 +26,8 @@ function App() {
       onClick={toggleDrawer(false)}
       onKeyDown={toggleDrawer(false)}
     >
-  <List>
-  {['Customers', 'Trainings'].map((text) => (
+    <List>
+  {['Customers', 'Trainings', 'Calendar', 'Statistics'].map((text) => ( 
     <Button 
       key={text} 
       onClick={() => setCurrentPage(text.toLowerCase())} 
@@ -34,14 +38,23 @@ function App() {
         textTransform: 'none'  
       }}
     >
-      {text}
+    {text}
     </Button>
-  ))}
+))}
 </List>
-
-
     </div>
   );
+
+  
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const customersData =  fetchCustomers();
+      setCustomers(customersData);  
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <Container maxWidth="xl">
@@ -60,7 +73,9 @@ function App() {
 
       <div>
         {currentPage === 'customers' && <CustomerList />}
-        {currentPage === 'trainings' && <TrainingList />}
+        {currentPage === 'trainings' && <TrainingList customers={customers} fetchCustomers={fetchCustomers}/>}
+        {currentPage === 'calendar' && <Calendar />}
+        {currentPage === 'statistics' && <StatisticsPage />}
       </div>
     </Container>
   );

@@ -51,8 +51,11 @@ export default function EditCustomer({ customerData, fetchCustomers }) {
     .then(response => {
       if (!response.ok) {
         throw new Error('Error in edit: ' + response.statusText);
+      } else {
+        setOpen(false)
+        fetchCustomers();
+        console.log('customer', response.url)
       }
-      fetchCustomers();
     })
     .catch(err => console.error(err));
 

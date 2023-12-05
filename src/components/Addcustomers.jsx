@@ -88,4 +88,4 @@ function AddCustomer({ fetchCustomers }) {
   );
 }
 
-export default AddCustomer;
+export default AddCustomer; 

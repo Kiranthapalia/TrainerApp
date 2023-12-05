@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Box, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Snackbar } from '@mui/material';
-import { format } from 'date-fns';
+import dayjs from 'dayjs';
 
-function AddTraining({ fetchTrainings }) {
+function AddTraining({ fetchTrainings, customer }) {
   const [newTraining, setNewTraining] = useState({
     date: '',
     duration: '',
@@ -14,6 +14,7 @@ function AddTraining({ fetchTrainings }) {
 
   const handleClickOpen = () => {
     setOpen(true);
+    setNewTraining({ ...newTraining, customer: `https://traineeapp.azurewebsites.net/api/customers/${customer.id}` });
   };
 
   const handleClose = () => {
@@ -25,10 +26,9 @@ function AddTraining({ fetchTrainings }) {
   };
 
   const handleSave = () => {
-    // Formatting the date to the required format
     const formattedTraining = {
       ...newTraining,
-      date: format(new Date(newTraining.date), 'dd.MM.yyyy HH:mm')
+      date: dayjs(newTraining.date).toISOString(), // Formatting date to ISO-8601
     };
 
     fetch('https://traineeapp.azurewebsites.net/api/trainings', {
@@ -89,14 +89,6 @@ function AddTraining({ fetchTrainings }) {
             name="activity"
             label="Activity"
             value={newTraining.activity}
-            onChange={handleChange}
-            fullWidth
-            margin="dense"
-          />
-          <TextField 
-            name="customer"
-            label="Customer ID"
-            value={newTraining.customer}
             onChange={handleChange}
             fullWidth
             margin="dense"

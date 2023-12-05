@@ -3,18 +3,22 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-material.css";
 import Snackbar from '@mui/material/Snackbar';
-import { format } from 'date-fns';
-import AddTraining from "./AddTraining";
+import dayjs from 'dayjs';
+import { Button } from "@mui/material";
 
 function TrainingList() {
   const [trainings, setTrainings] = useState([]);
   const [open, setOpen] = useState(false);
 
 const [columnDefs] = useState([
-  { field: "date", sortable: true, filter: true, valueFormatter: params => format(new Date(params.value), 'dd.MM.yyyy HH:mm')},
+  { field: "date", sortable: true, filter: true, valueFormatter: params => dayjs(params.value).format('DD.MM.YYYY HH:mm')},  
   { field: "duration", sortable: true, filter: true },
   { field: "activity", sortable: true, filter: true },
-  { field: "customer.name", sortable: true, filter: true, headerName: "Customer Name",valueGetter: params => params.data.customer ? `${params.data.customer.firstname} ${params.data.customer.lastname}` : ''
+  { field: "customer.name", sortable: true, filter: true, headerName: "Customer Name",valueGetter: params => params.data.customer ? `${params.data.customer.firstname} ${params.data.customer.lastname}` : ''},
+  { headerName: '',field: 'actions',
+    cellRenderer: params => (
+      <Button size="small"onClick={() => handleDeleteTraining(params.data)}>Delete</Button>),
+      filter: false, sortable: false, width: 100
   },
 ]);
 
@@ -50,12 +54,27 @@ const [columnDefs] = useState([
       .catch(err => console.error(err));
   }
   
-
-  
+  const handleDeleteTraining = (trainingData) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this training?');
+    if (confirmDelete) {
+      const deleteUrl = trainingData.links.find(link => link.rel === "self").href;
+      fetch(deleteUrl, { method: 'DELETE' })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Error in delete: ' + response.statusText);
+          }
+          setOpen(true); 
+          fetchTrainings(); 
+        })
+        .catch(err => {
+          console.error(err);
+          alert('Failed to delete training');
+        });
+    }
+  };
 
   return (
     <>
-    <AddTraining fetchTrainings={fetchTrainings} />
       <div className="ag-theme-material" style={{ width: "90%", height: 600 }}>
         <AgGridReact
           rowData={trainings}
