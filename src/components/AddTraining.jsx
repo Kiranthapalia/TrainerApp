@@ -1,20 +1,22 @@
 import { useState } from 'react';
 import { Box, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Snackbar } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import dayjs from 'dayjs';
 
 function AddTraining({ fetchTrainings, customer }) {
+  const [open, setOpen] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const [newTraining, setNewTraining] = useState({
     date: '',
     duration: '',
     activity: '',
     customer: ''
   });
-  const [open, setOpen] = useState(false);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleClickOpen = () => {
+    console.log('Received customer prop:', customer);
     setOpen(true);
-    setNewTraining({ ...newTraining, customer: `https://traineeapp.azurewebsites.net/api/customers/${customer.id}` });
+    setNewTraining({ ...newTraining, customer: customer.links[0].href });
   };
 
   const handleClose = () => {
@@ -58,9 +60,9 @@ function AddTraining({ fetchTrainings, customer }) {
 
   return (
     <>
-      <Box display="flex" justifyContent="flex-start" marginTop={4} marginBottom={2}>
-        <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-          Add Training
+      <Box display="flex" justifyContent="flex-start" marginTop={1} marginBottom={2}>
+        <Button color="primary" onClick={handleClickOpen} startIcon={<AddIcon />}>
+         
         </Button>
       </Box>
       <Dialog open={open} onClose={handleClose}>

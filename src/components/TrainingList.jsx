@@ -5,6 +5,7 @@ import "ag-grid-community/styles/ag-theme-material.css";
 import Snackbar from '@mui/material/Snackbar';
 import dayjs from 'dayjs';
 import { Button } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 function TrainingList() {
   const [trainings, setTrainings] = useState([]);
@@ -17,8 +18,8 @@ const [columnDefs] = useState([
   { field: "customer.name", sortable: true, filter: true, headerName: "Customer Name",valueGetter: params => params.data.customer ? `${params.data.customer.firstname} ${params.data.customer.lastname}` : ''},
   { headerName: '',field: 'actions',
     cellRenderer: params => (
-      <Button size="small"onClick={() => handleDeleteTraining(params.data)}>Delete</Button>),
-      filter: false, sortable: false, width: 100
+      <Button size="small"onClick={() => handleDeleteTraining(params.data)} startIcon={<DeleteIcon />}></Button>),
+      filter: false, sortable: false, width: 150
   },
 ]);
 
@@ -85,7 +86,7 @@ const [columnDefs] = useState([
       </div>
       <Snackbar
         open={open}
-        autoHideDuration={3000}
+        autoHideDuration={8000}
         onClose={() => setOpen(false)}
         message="Operation successful"
       />

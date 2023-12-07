@@ -5,8 +5,10 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import EditIcon from '@mui/icons-material/Edit';
 
 export default function EditCustomer({ customerData, fetchCustomers }) {
+  const [open, setOpen] = useState(false);
   const [newCustomer, setNewCustomer] = useState({
     firstname: '',
     lastname: '',
@@ -16,7 +18,6 @@ export default function EditCustomer({ customerData, fetchCustomers }) {
     email: '',
     phone: ''
   });
-  const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
     setNewCustomer({
@@ -64,8 +65,7 @@ export default function EditCustomer({ customerData, fetchCustomers }) {
 
   return (
     <>
-      <Button size="small" onClick={handleClickOpen}>
-        Edit
+      <Button size="small" onClick={handleClickOpen} startIcon={<EditIcon />}>
       </Button>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Update Customer</DialogTitle>
