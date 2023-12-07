@@ -44,7 +44,7 @@ export default function EditCustomer({ customerData, fetchCustomers }) {
 
     const customerUrl = customerData.links.find(link => link.rel === "customer" || link.rel === "self").href;
 
-    fetch(customerUrl.replace("http:", "https:"), {
+    fetch(customerUrl, {
       method: 'PUT',
       headers: { 'Content-type': 'application/json' },
       body: JSON.stringify(newCustomer)

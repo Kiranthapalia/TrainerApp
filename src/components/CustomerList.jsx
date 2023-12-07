@@ -47,7 +47,7 @@ function CustomerList() {
     const deleteCustomer = async (url) => {
       if (window.confirm('Are you sure?')) {
         try {
-          const response = await fetch(url.replace("http:", "https:"), { method: 'DELETE' });
+          const response = await fetch(url, { method: 'DELETE' });
           if (!response.ok) throw new Error('Error in delete: ' + response.statusText);
           setOpen(true);
           fetchCustomers();
