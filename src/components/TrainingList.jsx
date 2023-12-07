@@ -29,31 +29,47 @@ const [columnDefs] = useState([
   }, []);
 
   const fetchTrainings = () => {
-    fetch('https://traineeapp.azurewebsites.net/api/trainings')
-      .then(response => {
-        if (!response.ok)
-          throw new Error("Something went wrong" + response.statusText);
-        return response.json();
-      })
-      .then(data => {
-        if (data && Array.isArray(data.content)) {
-          return Promise.all(data.content.map(training => {
-            return fetch(training.links.find(link => link.rel === "customer").href)
-              .then(response => response.json())
-              .then(customerData => {
-                return { ...training, customer: { firstname: customerData.firstname, lastname: customerData.lastname } };
-              });
-          }));
-        } else {
-          console.error("Received data does not have a content array:", data);
-          return [];
-        }
-      })
-      .then(trainingsWithCustomer => {
-        setTrainings(trainingsWithCustomer);
-      })
-      .catch(err => console.error(err));
-  }
+    // Ensure the API URL uses HTTPS
+    const apiUrl = 'https://traineeapp.azurewebsites.net/api/trainings';
+
+    fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Something went wrong: " + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && Array.isArray(data.content)) {
+                return Promise.all(data.content.map(training => {
+                    const customerUrl = training.links.find(link => link.rel === "customer").href;
+
+                    // Ensure the customer URL uses HTTPS
+                    return fetch(customerUrl.replace("http:", "https:"))
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Error fetching customer: ' + response.statusText);
+                            }
+                            return response.json();
+                        })
+                        .then(customerData => {
+                            return { ...training, customer: { firstname: customerData.firstname, lastname: customerData.lastname } };
+                        });
+                }));
+            } else {
+                console.error("Received data does not have a content array:", data);
+                return [];
+            }
+        })
+        .then(trainingsWithCustomer => {
+            setTrainings(trainingsWithCustomer);
+        })
+        .catch(err => {
+            console.error("Error during fetch: ", err);
+            // Handle how you want to inform the user of an error
+        });
+}
+
   
   const handleDeleteTraining = (trainingData) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this training?');

@@ -33,7 +33,7 @@ function AddTraining({ fetchTrainings, customer }) {
       date: dayjs(newTraining.date).toISOString(), // Formatting date to ISO-8601
     };
 
-    fetch('https://traineeapp.azurewebsites.net/api/trainings', {
+    fetch('https://traineeapp.azurewebsites.net/api/trainings'.replace("http:", "https:"), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formattedTraining)
